@@ -6,6 +6,13 @@ import router from './router'
 
 Vue.config.productionTip = false
 
+if (process.env.NODE_ENV == 'production') {
+  window.API = 'https://scan.tomochain.com/api'
+}
+else {
+  window.API = 'https://scan.testnet.tomochain.com/api'
+}
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
