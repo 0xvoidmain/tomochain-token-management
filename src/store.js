@@ -1,6 +1,6 @@
 import axios from 'axios'
 var store = {
-  address: '0xb4742932bDAe0caeCf8Eb2AAcb34384433d74226',
+  address: '',
   tokens: []
 }
 
@@ -24,5 +24,11 @@ export default {
       address: e.tokenObj.hash.toLowerCase()
     })).filter(e => !store.tokens.find(f => f.address == e.address));
     store.tokens = store.tokens.concat(newTokens);
+  },
+  login() {
+    debugger;
+    if (typeof web3 !== "undefined") {
+      store.address = web3.eth.accounts[0];
+    }
   }
 }

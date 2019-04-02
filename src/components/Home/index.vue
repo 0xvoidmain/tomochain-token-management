@@ -28,5 +28,4 @@ export default {
 <style lang="stylus" scoped>
 .home
   padding 15px 10px
-
 </style>
