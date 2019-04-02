@@ -26,7 +26,6 @@ export default {
     store.tokens = store.tokens.concat(newTokens);
   },
   login() {
-    debugger;
     if (typeof web3 !== "undefined") {
       store.address = web3.eth.accounts[0];
     }
