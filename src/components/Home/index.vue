@@ -5,27 +5,33 @@
 </template>
 
 <script>
-import TokenItem from './TokenItem'
-import store from '../../store';
-import axios from 'axios';
+import TokenItem from "./TokenItem";
+import store from "../../store";
+import axios from "axios";
 
 export default {
-  name: 'Home',
+  name: "Home",
   components: {
     TokenItem
   },
   data() {
     return {
       store: store.data
-    }
+    };
   },
   async created() {
-    store.loadTokens(1, 15);
+    window.addEventListener("load", function() {
+      const checkAddr = store.login();
+      if (checkAddr !== "undefined") {
+        store.loadTokens(1, 15);
+      }
+    });
   }
-}
+};
 </script>
 
 <style lang="stylus" scoped>
-.home
-  padding 15px 10px
+.home {
+  padding: 15px 10px;
+}
 </style>

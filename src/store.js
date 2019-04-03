@@ -1,7 +1,9 @@
-import axios from 'axios'
+import axios from 'axios';
+import Web3 from "web3";
+
 var store = {
   address: '',
-  tokens: []
+  tokens: [],
 }
 
 window.store = store;
@@ -26,9 +28,13 @@ export default {
     store.tokens = store.tokens.concat(newTokens);
   },
   login() {
-    debugger;
     if (typeof web3 !== "undefined") {
       store.address = web3.eth.accounts[0];
-    }
+      return store.address;
+    };
+  },
+  getToken(addr) {
+    let token = store.tokens.find(e => e.address == addr);
+    return token;
   }
 }
