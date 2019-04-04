@@ -1,6 +1,6 @@
 <template>
-  <div class="token-item">
-    <router-link v-bind:to="'tokendetail/'+token.address">
+  <router-link v-bind:to="'tokendetail/'+token.address" tag="div">
+    <div class="token-item">
       <img v-if="token.icon" class="icon" :src="token.icon">
       <div v-else class="icon">{{token.symbol[0]}}</div>
       <div class="info">
@@ -10,8 +10,8 @@
         </div>
         <div class="amount">{{parseFloat(token.balance).toFixed(2)}}</div>
       </div>
-    </router-link>
-  </div>
+    </div>
+  </router-link>
 </template>
 
 <script>
