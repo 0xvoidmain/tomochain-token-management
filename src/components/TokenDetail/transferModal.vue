@@ -43,7 +43,7 @@
                 >Transfer Now</div>
               </div>
               <h5 v-if="zeroTomo" style="color: red; margin-left: 37px;">Can't transfer without TOMO</h5>
-              <h5 style="color: gray; margin-left: 112px;" @click="$emit('close')">Back</h5>
+              <h5 style="color: gray; text-align: center" @click="$emit('close')">Back</h5>
             </div>
           </div>
         </div>

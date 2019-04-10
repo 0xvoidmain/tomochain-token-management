@@ -1,11 +1,12 @@
 <template>
   <div style="padding-bottom: 30px">
-    <div class="transaction-item" v-for="transaction in transactions" :key="transaction.id">
-      <div
-        v-if="transaction.from === address"
-        class="transaction-table"
-        @click="linkToScan(transaction.transactionHash)"
-      >
+    <div
+      class="transaction-item"
+      v-for="transaction in transactions"
+      :key="transaction.id"
+      @click="linkToScan(transaction.transactionHash)"
+    >
+      <div v-if="transaction.from === address" class="transaction-table">
         <div class="container" style="margin-right: 0px; width: 60%">
           <h3 style="color: red;margin: 0 0 10px;font-size: 1em;">Send</h3>
           <h5
@@ -65,8 +66,8 @@ export default {
       this.page += 10;
     },
     linkToScan(hash) {
-      // window.open(this.url + "/" + hash, "_blank");
-      window.location.href = this.url + "/" + hash;
+      window.open(this.url + "/" + hash, "_blank");
+      // window.location.href = this.url + "/" + hash;
     }
   }
 };

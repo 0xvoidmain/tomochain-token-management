@@ -57,6 +57,7 @@ export default {
 .token-symbol {
   text-align: center;
   padding: 15px 15px 0;
+  color: palegreen;
 }
 
 div.icon {
