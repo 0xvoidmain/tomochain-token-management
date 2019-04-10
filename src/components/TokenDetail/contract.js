@@ -24,5 +24,15 @@ export default {
                 cb && cb(balance)
             })
         })
+    },
+    getAddressBalance(cb) {
+        web3.eth.getBalance(store.data.address, (error, result) => {
+            if (error) {
+                return error;
+            } else {
+                let balance = web3.toDecimal(result);
+                cb && cb(balance);
+            }
+        });
     }
 }

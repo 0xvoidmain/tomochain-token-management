@@ -1,5 +1,5 @@
 <template>
-  <div v-if="token" id="tokendetail">
+  <div v-if="token" id="tokendetail" style="padding: 15px;">
     <div class="container">
       <div v-if="token" class="token-symbol">{{token.name}}</div>
     </div>
@@ -10,36 +10,12 @@
     <div class="container">
       <div class="amount">{{parseFloat(tokenBalance).toFixed(2)}} {{token.symbol}}</div>
     </div>
-    <div class="exchange">
-      <div class="exchange__container">
-        <div class="input-group">
-          <div class="input-group__title">Send:</div>
-          <div class="input-group__wrapper">
-            <input
-              class="input-group__input input-group__input-swap"
-              type="text"
-              placeholder="0"
-              v-model="transferValue"
-            >
-          </div>
-          <div class="input-group__info input-group__info-address"></div>
-        </div>
-        <div class="input-group">
-          <div class="input-group__title">To Address:</div>
-          <div class="input-group__wrapper">
-            <input
-              class="input-group__input input-group__input--ful"
-              type="text"
-              v-model="recipientAddress"
-            >
-            <div class="input-group__info"></div>
-          </div>
-        </div>
-        <div class="exchange__button-container common__fade-in">
-          <div class="exchange__button common__button-gradient" v-on:click="transfer()" disabled>Transfer Now</div>
-        </div>
-      </div>
-    </div> 
+    <div class="exchange__button-container common__fade-in">
+      <div class="exchange__button common__button-gradient" @click="showModal = true">Send</div>
+    </div>
+    <br>
+    <transaction style="padding-bottom: 30px"/>
+    <transferModal v-if="showModal" @close="showModal = false"></transferModal>
   </div>
 </template>
 
@@ -47,14 +23,20 @@
 import store from "../../store";
 import { constants } from "fs";
 import contract from "./contract";
+import transferModal from "./transferModal";
+import transaction from "./transaction";
 export default {
   name: "TokenDetail",
+  components: {
+    transferModal,
+    transaction
+  },
   data() {
     return {
       token: null,
-      transferValue: "",
-      recipientAddress: "",
-      tokenBalance: 0
+      tokenBalance: 0,
+      zeroTomo: false,
+      showModal: false
     };
   },
   async created() {
@@ -64,18 +46,9 @@ export default {
         this.tokenBalance = balance;
       });
     }, 2000);
-  },
-  methods: {
-    transfer: function() {
-      let result = contract.transferTokens(
-        this.recipientAddress,
-        this.transferValue,
-        this.token.address,
-        async (err, hash) => {
-          alert(hash);
-        }
-      );
-    }
+    let loadAccountBalance = contract.getAddressBalance(balance => {
+      if (balance === 0) this.zeroTomo = true;
+    });
   }
 };
 </script>
@@ -112,6 +85,11 @@ div.icon {
 
 .exchange__container {
   margin-bottom: 30px;
+}
+
+.exchange__container.diabled {
+  margin-bottom: 30px;
+  opacity: 0.2;
 }
 
 .input-group {

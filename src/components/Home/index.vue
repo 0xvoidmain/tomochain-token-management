@@ -7,7 +7,6 @@
 <script>
 import TokenItem from "./TokenItem";
 import store from "../../store";
-import axios from "axios";
 
 export default {
   name: "Home",

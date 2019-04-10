@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Web3 from "web3";
 
 var store = {
   address: '',
@@ -36,5 +35,8 @@ export default {
   getToken(addr) {
     let token = store.tokens.find(e => e.address == addr);
     return token;
-  }
+  },
+  checkAddress(addr) {
+    return web3.isAddress(addr);
+  },
 }
