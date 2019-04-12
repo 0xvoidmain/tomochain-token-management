@@ -6,7 +6,7 @@
           <div class="exchange">
             <div class="exchange__container">
               <div class="input-group">
-                <div class="input-group__title">Send:</div>
+                <div class="input-group__title" style="display: flex;">Send:</div>
                 <div class="input-group__wrapper">
                   <input
                     class="input-group__input input-group__input-swap"
@@ -14,10 +14,9 @@
                     placeholder="0"
                     v-model="transferValue"
                   >
+                  <div v-on:click="allToken()" style="color: #3dbeff;">All</div>
                 </div>
-                <div class="input-group__info input-group__info-address">
-                  <h5 v-on:click="allToken()" style="margin-left: 186px">All</h5>
-                </div>
+                <div class="input-group__info input-group__info-address"></div>
               </div>
               <div class="input-group">
                 <div class="input-group__title">To Address:</div>
@@ -135,7 +134,7 @@ export default {
 }
 
 .input-group {
-  padding: 0 15px;
+  
 }
 
 .input-group__title {

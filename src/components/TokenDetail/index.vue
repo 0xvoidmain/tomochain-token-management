@@ -1,20 +1,24 @@
 <template>
   <div v-if="token" id="tokendetail" style="padding: 15px;">
-    <div class="container">
+    <div class="container" style="font-size: 25px">
       <div v-if="token" class="token-symbol">{{token.name}}</div>
     </div>
-    <div class="container">
-      <img v-if="token.icon" class="icon" :src="token.icon">
-      <div v-else class="icon">{{token.symbol[0]}}</div>
-    </div>
-    <div class="container">
-      <div class="amount">{{parseFloat(tokenBalance).toFixed(2)}} {{token.symbol}}</div>
+    <div class="token-header">
+      <!-- <div class="container">
+        <img v-if="token.icon" class="icon" :src="token.icon">
+        <div v-else class="icon">{{token.symbol[0]}}</div>
+      </div>-->
+      <div class="container">
+        <div class="amount" style="font-size: 40px">{{parseFloat(tokenBalance).toFixed(2)}}</div>
+        <div
+          style="font-family: SFProText,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif; color: #cfcde1; text-align: center;"
+        >{{token.symbol}}</div>
+      </div>
     </div>
     <div class="exchange__button-container common__fade-in">
       <div class="exchange__button common__button-gradient" @click="showModal = true">Send</div>
     </div>
-    <br>
-    <h4 style="color: #fff">Transactions:</h4>
+    <h4 style="color: #fff; margin-bottom: 10px;">Transactions:</h4>
     <transaction style="padding-bottom: 30px"/>
     <transferModal v-if="showModal" @close="showModal = false"></transferModal>
   </div>
@@ -75,7 +79,9 @@ export default {
 .token-symbol {
   text-align: center;
   padding: 15px 15px 0;
-  color: #fff;
+  color: #cfcde1;
+  font-family: SFProText, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
+  padding-bottom: 10px;
 }
 
 div.icon {
@@ -207,5 +213,17 @@ div.icon {
   background-size: auto 150%;
   cursor: pointer;
   transition: all 0.3s;
+}
+
+.token-header {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 25px 15px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  margin-bottom: -10px;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
 }
 </style>

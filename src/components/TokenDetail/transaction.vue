@@ -8,7 +8,7 @@
     >
       <div v-if="transaction.from === address" class="transaction-table">
         <div class="container" style="margin-right: 0px; width: 60%">
-          <h3 style="color: red;margin: 0 0 10px;font-size: 1em;">Send</h3>
+          <h3 style="color: #ff0000;margin: 0 0 10px;font-size: 1em;">Send</h3>
           <h5
             style="color: gray; overflow: auto; white-space: nowrap;overflow: hidden;width: 100%; text-overflow: ellipsis; margin: 0; font-weight: normal;"
           >To: {{transaction.to}}</h5>
@@ -19,7 +19,7 @@
       </div>
       <div v-if="transaction.to === address" class="transaction-table">
         <div class="container" style="margin-right: 0px; width: 60%">
-          <h3 style="color: green;margin: 0 0 10px;font-size: 1em;">Received</h3>
+          <h3 style="color: #00FF00;margin: 0 0 10px;font-size: 1em;">Received</h3>
           <h5
             style="color: gray; overflow: auto;white-space: nowrap;overflow: hidden;width: 100%;text-overflow: ellipsis;margin: 0;font-weight: normal;"
           >From: {{transaction.from}}</h5>
