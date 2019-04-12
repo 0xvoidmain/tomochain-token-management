@@ -29,6 +29,16 @@ import transaction from "./transaction";
 import { debuglog } from "util";
 export default {
   name: "TokenDetail",
+  beforeCreate() {
+    if (!store.data.address) {
+      window.addEventListener("load", () => {
+        const checkAddr = store.login();
+        if (checkAddr !== "undefined") {
+          store.loadTokens(1, 15);
+        }
+      });
+    }
+  },
   components: {
     transferModal,
     transaction
@@ -42,19 +52,7 @@ export default {
     };
   },
   async created() {
-    if (!store.data.address) {
-      window.addEventListener("load", () => {
-        const checkAddr = store.login();
-        if (checkAddr !== "undefined") {
-          store.loadTokens(1, 15);
-          if (store.data.tokens) {
-            this.getTokens();
-          }
-        }
-      });
-    } else {
-      this.getTokens();
-    }
+    this.getTokens();
   },
   methods: {
     getTokens: async function() {
@@ -64,7 +62,7 @@ export default {
         contract.getTokenBalance(this.$route.params.address, balance => {
           this.tokenBalance = balance;
         });
-      }, 2000);
+      }, 1000);
       let loadAccountBalance = contract.getAddressBalance(balance => {
         if (balance === 0) this.zeroTomo = true;
       });
