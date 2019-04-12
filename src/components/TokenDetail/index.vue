@@ -14,6 +14,7 @@
       <div class="exchange__button common__button-gradient" @click="showModal = true">Send</div>
     </div>
     <br>
+    <h4 style="color: #fff">Transactions:</h4>
     <transaction style="padding-bottom: 30px"/>
     <transferModal v-if="showModal" @close="showModal = false"></transferModal>
   </div>
@@ -25,6 +26,7 @@ import { constants } from "fs";
 import contract from "./contract";
 import transferModal from "./transferModal";
 import transaction from "./transaction";
+import { debuglog } from "util";
 export default {
   name: "TokenDetail",
   components: {
@@ -40,15 +42,33 @@ export default {
     };
   },
   async created() {
-    this.token = await store.getToken(this.$route.params.address);
-    let loadTokenBalance = setInterval(() => {
-      contract.getTokenBalance(this.$route.params.address, balance => {
-        this.tokenBalance = balance;
+    if (!store.data.address) {
+      window.addEventListener("load", () => {
+        const checkAddr = store.login();
+        if (checkAddr !== "undefined") {
+          store.loadTokens(1, 15);
+          if (store.data.tokens) {
+            this.getTokens();
+          }
+        }
       });
-    }, 2000);
-    let loadAccountBalance = contract.getAddressBalance(balance => {
-      if (balance === 0) this.zeroTomo = true;
-    });
+    } else {
+      this.getTokens();
+    }
+  },
+  methods: {
+    getTokens: async function() {
+      this.token = await store.getToken(this.$route.params.address);
+      let loadTokenBalance = setInterval(async () => {
+        this.token = await store.getToken(this.$route.params.address);
+        contract.getTokenBalance(this.$route.params.address, balance => {
+          this.tokenBalance = balance;
+        });
+      }, 2000);
+      let loadAccountBalance = contract.getAddressBalance(balance => {
+        if (balance === 0) this.zeroTomo = true;
+      });
+    }
   }
 };
 </script>
@@ -57,7 +77,7 @@ export default {
 .token-symbol {
   text-align: center;
   padding: 15px 15px 0;
-  color: palegreen;
+  color: #fff;
 }
 
 div.icon {
@@ -65,7 +85,7 @@ div.icon {
   font-weight: 900;
   height: 30px;
   line-height: 30px;
-  background: #ff9800;
+  background: #678be0;
   border-radius: 25px;
   color: #fff;
   width: 30px;
@@ -75,7 +95,7 @@ div.icon {
 .amount {
   text-align: center;
   font-weight: 600;
-  color: #4cd964;
+  color: #30ddd8;
 }
 
 .exchange {

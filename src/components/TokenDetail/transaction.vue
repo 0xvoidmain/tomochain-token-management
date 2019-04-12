@@ -10,37 +10,38 @@
         <div class="container" style="margin-right: 0px; width: 60%">
           <h3 style="color: red;margin: 0 0 10px;font-size: 1em;">Send</h3>
           <h5
-            style="overflow: auto;white-space: nowrap;overflow: hidden;width: 100%;text-overflow: ellipsis;margin: 0;font-weight: normal;"
+            style="color: gray; overflow: auto; white-space: nowrap;overflow: hidden;width: 100%; text-overflow: ellipsis; margin: 0; font-weight: normal;"
           >To: {{transaction.to}}</h5>
         </div>
         <div
-          style="color: red;width: 40%;font-size: 12px;text-align: right;"
+          style="color: red;width: 40%;font-size: 16px;text-align: right;"
         >- {{transaction.value/10**18}} {{transaction.symbol}}</div>
       </div>
       <div v-if="transaction.to === address" class="transaction-table">
         <div class="container" style="margin-right: 0px; width: 60%">
           <h3 style="color: green;margin: 0 0 10px;font-size: 1em;">Received</h3>
           <h5
-            style="overflow: auto;white-space: nowrap;overflow: hidden;width: 100%;text-overflow: ellipsis;margin: 0;font-weight: normal;"
+            style="color: gray; overflow: auto;white-space: nowrap;overflow: hidden;width: 100%;text-overflow: ellipsis;margin: 0;font-weight: normal;"
           >From: {{transaction.from}}</h5>
         </div>
         <div
-          style="color: green;width: 40%;font-size: 12px;text-align: right;"
+          style="color: green;width: 40%;font-size: 16px;text-align: right;"
         >+ {{transaction.value/10**18}} {{transaction.symbol}}</div>
       </div>
     </div>
-    <h5 @click="load()" style="color: gray; text-align: center;">Load</h5>
+    <h5 @click="load()" style="color: gray; text-align: center;">Load More</h5>
   </div>
 </template>
 
 <script>
 import store from "../../store";
 import axios from "axios";
+import { constants } from "fs";
 export default {
   data() {
     return {
       transactions: null,
-      page: 13,
+      page: 0,
       address: "",
       url: ""
     };
@@ -48,26 +49,28 @@ export default {
   async created() {
     this.url = `${window.TXS}`;
     this.address = store.data.address;
+    this.page = localStorage.page;
     let transactions = await axios.get(
       `${window.API}/token-txs?token=${this.$route.params.address}&address=${
         store.data.address
-      }&page=1&limit=3`
+      }&page=1&limit=${this.page}`
     );
+
     this.transactions = transactions.data.items;
   },
   methods: {
     async load() {
+      this.page = Number(this.page) + 10;
+      localStorage.page = this.page;
       let transactions = await axios.get(
-        `${window.API}/token-txs?token=${
-          this.$route.params.address
-        }&   address=${store.data.address}&page=1&limit=${this.page}`
+        `${window.API}/token-txs?token=${this.$route.params.address}&address=${
+          store.data.address
+        }&page=1&limit=${this.page}`
       );
       this.transactions = transactions.data.items;
-      this.page += 10;
     },
     linkToScan(hash) {
-      window.open(this.url + "/" + hash, "_blank");
-      // window.location.href = this.url + "/" + hash;
+      window.location.href = this.url + "/" + hash;
     }
   }
 };

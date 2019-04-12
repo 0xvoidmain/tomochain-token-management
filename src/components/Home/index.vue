@@ -25,6 +25,7 @@ export default {
         store.loadTokens(1, 15);
       }
     });
+    localStorage.page = 3;
   }
 };
 </script>

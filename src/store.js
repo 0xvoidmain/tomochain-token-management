@@ -31,7 +31,7 @@ export default {
       store.address = web3.eth.accounts[0];
       return store.address;
     } else {
-      alert('Please unlock MetaMask and reload browser!');
+      window.alert('Please unlock MetaMask and reload browser!');
     };
   },
   getToken(addr) {
