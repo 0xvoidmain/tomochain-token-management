@@ -6,6 +6,7 @@
           <div class="exchange">
             <div class="exchange__container">
               <div class="input-group">
+                <div style="color: #868f9b; text-align: right" @click="$emit('close')">x</div>
                 <div class="input-group__title" style="display: flex;">Send:</div>
                 <div class="input-group__wrapper">
                   <input
@@ -42,7 +43,7 @@
                 >Transfer Now</div>
               </div>
               <h5 v-if="zeroTomo" style="color: red; margin-left: 37px;">Can't transfer without TOMO</h5>
-              <h5 style="color: gray; text-align: center" @click="$emit('close')">Back</h5>
+              <!-- <h5 style="color: gray; text-align: center" @click="$emit('close')">Back</h5> -->
             </div>
           </div>
         </div>
@@ -134,7 +135,6 @@ export default {
 }
 
 .input-group {
-  
 }
 
 .input-group__title {
