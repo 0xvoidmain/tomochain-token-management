@@ -1,6 +1,16 @@
 <template>
   <div class="home">
-    <TokenItem v-for="e in store.tokens" :key="e.address" :token="e"/>
+    <div v-if="!store.tokens || store.tokens.length == 0">
+      <div class="empty">
+        Empty
+      </div>
+      <div class="empty-text">
+        You dont have any TRC-20 tokens;
+      </div>
+    </div>
+    <div v-else>
+      <TokenItem v-for="e in store.tokens" :key="e.address" :token="e"/>
+    </div>
   </div>
 </template>
 
@@ -33,5 +43,16 @@ export default {
 <style lang="stylus" scoped>
 .home {
   padding: 15px 10px;
+}
+.empty {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 40px;
+  opacity: 0.2;
+}
+.empty-text {
+  text-align: center;
+  opacity: 0.7;
+  margin-top: 10px;
 }
 </style>
