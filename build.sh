@@ -1,4 +1,4 @@
-npm run build-app
+npm run build
 rm -rf ./static/css
 rm -rf ./static/img
 rm -rf ./static/js
