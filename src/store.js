@@ -1,7 +1,8 @@
-import axios from 'axios'
+import axios from 'axios';
+
 var store = {
   address: '',
-  tokens: []
+  tokens: [],
 }
 
 window.store = store;
@@ -28,6 +29,16 @@ export default {
   login() {
     if (typeof web3 !== "undefined") {
       store.address = web3.eth.accounts[0];
-    }
-  }
+      return store.address;
+    } else {
+      window.alert('Please unlock MetaMask and reload browser!');
+    };
+  },
+  getToken(addr) {
+    let token = store.tokens.find(e => e.address == addr);
+    return token;
+  },
+  checkAddress(addr) {
+    return web3.isAddress(addr);
+  },
 }
