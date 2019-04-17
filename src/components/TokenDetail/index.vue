@@ -1,5 +1,5 @@
 <template>
-  <div v-if="token" id="tokendetail" style="padding: 15px;">
+  <div v-if="token" id="tokendetail" style="padding: 0 15px 15px 15px;">
     <div class="navbar">
       <div class="navbar-container">
         <button class="back-btn" @click="back">
@@ -7,23 +7,21 @@
         </button>
       </div>
     </div>
-    <div class="container" style="font-size: 25px">
-      <div v-if="token" class="token-symbol">{{token.name}}</div>
-    </div>
     <div class="token-header">
-      <!-- <div class="container">
-        <img v-if="token.icon" class="icon" :src="token.icon">
-        <div v-else class="icon">{{token.symbol[0]}}</div>
-      </div>-->
+      <div class="container" style="font-size: 25px">
+        <div v-if="token" class="token-symbol">{{token.name}}</div>
+      </div>
       <div class="container">
-        <div class="amount" style="font-size: 40px">{{parseFloat(tokenBalance).toFixed(2)}}</div>
-        <div style="color: #cfcde1; text-align: center;">{{token.symbol}}</div>
+        <div class="amount" style="font-size: 40px">
+          {{parseFloat(tokenBalance).toFixed(2)}}
+          <span style="color: #cfcde1; font-size: 20px">{{token.symbol}}</span>
+        </div>
       </div>
     </div>
     <div class="exchange__button-container common__fade-in">
       <div class="exchange__button common__button-gradient" @click="showModal = true">Send</div>
     </div>
-    <transaction style="padding-bottom: 30px"/>
+    <transaction style="padding-bottom: 100px"/>
     <transferModal :show="showModal" :balance="tokenBalance" @close="showModal = false"></transferModal>
   </div>
 </template>
@@ -90,9 +88,7 @@ export default {
 
 <style scoped>
 .token-symbol {
-  text-align: center;
-  padding: 15px 15px 0;
-  color: #cfcde1;
+  color: #ffffff;
   padding-bottom: 10px;
 }
 
@@ -109,101 +105,19 @@ div.icon {
 }
 
 .amount {
-  text-align: center;
   font-weight: 600;
-  color: #4CD964;
-}
-
-.exchange {
-  box-sizing: border-box;
-  display: block;
-  font-family: Montserrat, sans-serif;
-}
-
-.exchange__container {
-  margin-bottom: 30px;
-}
-
-.exchange__container.diabled {
-  margin-bottom: 30px;
-  opacity: 0.2;
-}
-
-.input-group {
-  padding: 0 15px;
-}
-
-.input-group__title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #3dbeff;
-  padding-left: 10px;
-  margin-bottom: 13px;
-}
-
-.input-group__wrapper {
-  padding: 14px 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 30px;
-  border: 2px solid transparent;
-  background-color: #29315b;
-  transition: all 0.3s;
-}
-
-.token-selector {
-  display: flex;
-}
-
-.input-group__info-address {
-  margin-bottom: 25px;
-  display: block;
-}
-
-.input-group__info {
-  height: 22px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #8690ad;
-  padding: 0 25px;
-  position: relative;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-align-items: flex-start;
-  align-items: flex-start;
-}
-
-.input-group__input-swap {
-  width: calc(100% - 100px);
-}
-
-.input-group__input {
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 31px;
-  outline: none;
-  border: none;
-  width: 100%;
-  font-weight: 500;
-  color: #caccd9;
-  background-color: #29315b;
-  transition: padding 0.3s;
-}
-
-.input-group__input--full {
-  width: 100% !important;
-  text-align: left;
+  color: rgb(76, 217, 100);
 }
 
 .exchange__button-container {
   text-align: center;
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
 }
 
 .common__fade-in {
-  transform: translateY(10px);
   animation: fade-in 0.3s forwards;
 }
 
@@ -228,13 +142,10 @@ div.icon {
 }
 
 .token-header {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  padding: 25px 15px;
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 5px;
+  padding: 15px 15px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
   border-radius: 5px;
-  margin-bottom: -10px;
   background: rgba(255, 255, 255, 0.05);
 }
 
@@ -248,12 +159,15 @@ div.icon {
   top: 0;
   height: 50px;
   padding-top: 10px;
-  background: #191d33;
-  z-index: 9999;
+  background: #262c4e;
+  z-index: 999;
 }
 
 .back-btn {
   padding: 10px;
   outline: none;
+  background: transparent;
+  border: none;
+  padding: 13px;
 }
 </style>

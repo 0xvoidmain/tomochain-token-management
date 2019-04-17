@@ -9,6 +9,7 @@
       </div>
     </div>
     <div v-else>
+      <div class="list-title">Your tokens</div>
       <TokenItem v-for="e in store.tokens" :key="e.address" :token="e"/>
     </div>
   </div>

@@ -20,7 +20,7 @@
           </div>
           <div
             style="color: #FF5723; width: 40%;font-size: 16px;text-align: right;"
-          >- {{(transaction.value/10**18).toFixed(2)}} {{transaction.symbol}}</div>
+          >-{{(transaction.value/10**18).toFixed(2)}} {{transaction.symbol}}</div>
         </div>
         <div v-if="transaction.to === address" class="transaction-table">
           <div class="container" style="margin-right: 0px; width: 60%">
@@ -31,7 +31,7 @@
           </div>
           <div
             style="color: #4CD964;width: 40%;font-size: 16px;text-align: right;"
-          >+ {{(transaction.value/10**18).toFixed(2)}} {{transaction.symbol}}</div>
+          >+{{(transaction.value/10**18).toFixed(2)}} {{transaction.symbol}}</div>
         </div>
       </div>
       <h5 v-if="haveMore" @click="loadMore()" style="color: gray; text-align: center;">Load More</h5>
@@ -64,7 +64,7 @@ export default {
     if (this.transactions && this.transactions.length == 0) {
       this.load();
     }
-    // this.intervalUpdateTransaction = setInterval(() => this.updateTransaction(), 2000);
+    this.intervalUpdateTransaction = setInterval(() => this.updateTransaction(), 2000);
   },
   destroyed() {
     clearInterval(this.intervalUpdateTransaction);
@@ -88,7 +88,7 @@ export default {
         }
       });
       data.items = data.items
-        .filter(e => !this.transactions.find(t => e.hash.toLowerCase() == t.hash.toLowerCase()));
+        .filter(e => !this.transactions.find(t => e.transactionHash.toLowerCase() == t.transactionHash.toLowerCase()));
       this.transactions = data.items.concat(this.transactions);
       localStorage.transactions = JSON.stringify(this.transactions);
     },
@@ -143,5 +143,8 @@ export default {
   color: #27a0f4;
   float: right;
   outline: none;
+  border: none;
+  background: transparent;
+  padding-right: 0;
 }
 </style>

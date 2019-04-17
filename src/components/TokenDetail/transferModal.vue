@@ -123,6 +123,7 @@ export default {
   left: 0;
   right: 0;
   height: 100vh;
+  z-index: 9999;
 }
 
 .modal-container {
@@ -160,8 +161,10 @@ export default {
   right: 5px;
   top: 5px;
   padding: 10px;
-  opacity: 0.7;
+  opacity: 0.7;;
   outline: none;
+  background: transparent;
+  border: none;
 }
 
 .input-group {
@@ -185,14 +188,14 @@ export default {
 
 .send-all-btn {
   position: absolute;
-  right: -2px;
+  right: 0px;
   top: 0px;
   bottom: 0px;
-  background: #007aff;
+  background: transparent;
   font-size: 15px;
   border-radius: 0 5px 5px 0;
   border: none;
-  color: #ffffff;
+  color: #007aff;
   padding: 0 20px;
   font-weight: 600;
   outline: none;

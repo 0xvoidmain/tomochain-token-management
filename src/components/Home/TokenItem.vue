@@ -25,7 +25,7 @@ export default {
 .token-item {
   display: flex;
   align-items: center;
-  padding: 10px 15px;
+  padding: 15px 15px;
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   margin-bottom: 10px;
