@@ -1,55 +1,41 @@
 <template>
-  <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-          <div class="exchange">
-            <div class="exchange__container">
-              <div class="input-group">
-                <div style="color: #868f9b; text-align: right" @click="$emit('close')">x</div>
-                <div class="input-group__title" style="display: flex;">Send:</div>
-                <div class="input-group__wrapper">
-                  <input
-                    class="input-group__input input-group__input-swap"
-                    type="text"
-                    placeholder="0"
-                    v-model="transferValue"
-                  >
-                  <div v-on:click="allToken()" style="color: #3dbeff;">All</div>
-                </div>
-                <div class="input-group__info input-group__info-address"></div>
-              </div>
-              <div class="input-group">
-                <div class="input-group__title">To Address:</div>
-                <div class="input-group__wrapper">
-                  <input
-                    class="input-group__input input-group__input--ful"
-                    type="text"
-                    v-model="recipientAddress"
-                  >
-                  <div class="input-group__info"></div>
-                </div>
-              </div>
-              <div v-if="validated() === false" class="exchange__button-container common__fade-in">
-                <div
-                  class="exchange__button common__button-gradient"
-                  style="opacity: 0.2"
-                >Transfer Now</div>
-              </div>
-              <div v-else class="exchange__button-container common__fade-in">
-                <div
-                  class="exchange__button common__button-gradient"
-                  v-on:click="transfer()"
-                >Transfer Now</div>
-              </div>
-              <h5 v-if="zeroTomo" style="color: red; margin-left: 37px;">Can't transfer without TOMO</h5>
-              <!-- <h5 style="color: gray; text-align: center" @click="$emit('close')">Back</h5> -->
-            </div>
-          </div>
+  <div class="modal" :class="show ? 'modal-open' : 'modal-close'">
+    <div class="modal-container">
+      <div class="modal-title">
+        Transfer {{token.name}}
+      </div>
+      <button class="close-btn" @click="() => closeModal()">
+        <img src="./close.svg" width="20px">
+      </button>
+      <div class="input-group">
+        <div>Send:</div>
+        <div class="input-group-wrap">
+          <input
+            class="input-group__input"
+            type="number"
+            placeholder="0"
+            v-model="transferValue"
+          >
+          <button v-on:click="allToken()" class="send-all-btn">All</button>
         </div>
       </div>
+      <div class="input-group">
+        <div class="input-group__title">To Address:</div>
+        <div class="input-group__wrapper">
+          <input
+            class="input-group__input input-group__input--ful"
+            type="text"
+            v-model="recipientAddress"
+          >
+          <div class="input-group__info"></div>
+        </div>
+      </div>
+      <div v-if="errorMsg" class="error-msg">{{errorMsg}}</div>
+      <button class="send-btn" v-on:click="transfer()">
+        {{isSending ? 'Sending...' : 'Send'}}
+      </button>
     </div>
-  </transition>
+  </div>
 </template>
 
 <script>
@@ -57,55 +43,54 @@ import store from "../../store";
 import { constants } from "fs";
 import contract from "./contract";
 export default {
+  props: ['balance', 'show'],
   data() {
     return {
       token: null,
       transferValue: "",
       recipientAddress: "",
-      tokenBalance: 0,
-      zeroTomo: false
+      dontHaveTomoForFee: false,
+      isSending: false,
+      errorMsg: ''
     };
   },
-  // props: {
-  //   token: Object,
-  //   tokenBalance: Number,
-  //   zeroTomo: Boolean,
-  // },
-  async created() {
-    this.token = await store.getToken(this.$route.params.address);
-    let loadTokenBalance = setInterval(() => {
-      contract.getTokenBalance(this.$route.params.address, balance => {
-        this.tokenBalance = balance;
-      });
-    }, 2000);
-    let loadAccountBalance = contract.getAddressBalance(balance => {
-      if (balance === 0) this.zeroTomo = true;
+  created() {
+    this.token = store.getToken(this.$route.params.address);
+    contract.getAddressBalance(balance => {
+      this.dontHaveTomoForFee = balance === 0;
     });
   },
   methods: {
+    closeModal() {
+      this.transferValue = "";
+      this.recipientAddress = "";
+      this.$emit('close');
+    },
     transfer: function() {
+      var errorMsg = this.validated();
+      if (errorMsg) {
+        this.errorMsg = errorMsg;
+        return;
+      }
+      this.isSending = true;
       let result = contract.transferTokens(
         this.recipientAddress,
         this.transferValue,
         this.token.address,
         async (err, hash) => {
-          // alert(hash);
+          this.isSending = false;
+          this.closeModal();
         }
       );
     },
     validated: function() {
-      if (
-        this.zeroTomo ||
-        this.transferValue > this.token.balance ||
-        !this.isNumeric(this.transferValue) ||
-        this.transferValue === "" ||
-        this.recipientAddress === "" ||
-        store.checkAddress(this.recipientAddress) !== true
-      ) {
-        return false;
-      } else {
-        return true;
-      }
+      if (this.dontHaveTomoForFee) return "You don't have TOMO for transaction fee";
+      if (this.transferValue > this.token.balance) return "Not engouht balancce";
+      if (this.transferValue == "" || this.transferValue == 0) return "Enter your amount";
+      if (!this.isNumeric(this.transferValue)) return "Amount must be numeric";
+      if (this.recipientAddress == "") return "Enter recipient address";
+      if (!store.checkAddress(this.recipientAddress)) return "Invalid recipient address";
+      return false;
     },
     isNumeric: function(value) {
       let regex = /[0-9]|\./;
@@ -119,143 +104,103 @@ export default {
 </script>
 
 <style scoped>
-.exchange {
-  box-sizing: border-box;
-  display: block;
-  font-family: Montserrat, sans-serif;
+
+.modal-open {
+  bottom: 0;
+  opacity: 1;
 }
 
-.exchange__container {
-  margin-bottom: 30px;
+.modal-close {
+  bottom: -100vh;
+  opacity: 0;
 }
 
-.exchange__container.diabled {
-  margin-bottom: 30px;
-  opacity: 0.2;
-}
-
-.input-group {
-}
-
-.input-group__title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #3dbeff;
-  padding-left: 10px;
-  margin-bottom: 13px;
-}
-
-.input-group__wrapper {
-  padding: 14px 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 30px;
-  border: 2px solid transparent;
-  background-color: #29315b;
-  transition: all 0.3s;
-}
-
-.token-selector {
-  display: flex;
-}
-
-.input-group__info-address {
-  margin-bottom: 25px;
-  display: block;
-}
-
-.input-group__info {
-  height: 22px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #8690ad;
-  padding: 0 25px;
-  position: relative;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-align-items: flex-start;
-  align-items: flex-start;
-}
-
-.input-group__input-swap {
-  width: calc(100% - 100px);
-}
-
-.input-group__input {
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 31px;
-  outline: none;
-  border: none;
-  width: 100%;
-  font-weight: 500;
-  color: #caccd9;
-  background-color: #29315b;
-  transition: padding 0.3s;
-}
-
-.input-group__input--full {
-  width: 100% !important;
-  text-align: left;
-}
-
-.exchange__button-container {
-  text-align: center;
-}
-
-.common__fade-in {
-  transform: translateY(10px);
-  animation: fade-in 0.3s forwards;
-}
-
-.exchange__button {
-  margin-top: 25px;
-}
-
-.common__button-gradient {
-  font-size: 18px;
-  font-weight: 500;
-  color: #fff;
-  border-radius: 30px;
-  display: inline-block;
-  padding: 16px 10px;
-  width: 159px;
-  text-align: center;
-  box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.16);
-  background: linear-gradient(180deg, #36cef9, #279df4) 0 100%;
-  background-size: auto 150%;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.modal-mask {
+.modal {
+  margin: 0px auto;
+  background-color: rgba(0, 0, 0, 0.16);
+  transition: all 0.5s ease;
   position: fixed;
-  z-index: 9998;
-  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: table;
-  transition: opacity 0.3s ease;
-}
-
-.modal-wrapper {
-  display: table-cell;
-  vertical-align: middle;
+  right: 0;
+  height: 100vh;
 }
 
 .modal-container {
-  width: 258px;
-  margin: 0px auto;
-  padding: 20px 30px;
-  background-color: #191d34;
-  border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-  transition: all 0.3s ease;
-  font-family: Helvetica, Arial, sans-serif;
+  color: #333333;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  padding: 15px 15px 15px 15px;
+  border-radius: 10px 10px 0 0;
+}
+
+.modal-title {
+  font-size: 20px;
+  margin-bottom: 30px;
+  color: #007AFF;
+}
+
+.send-btn {
+  background: #007AFF;
+  width: 100%;
+  border-radius: 5px;
+  border: none;
+  color: #ffffff;
+  padding: 15px;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-weight: 600;
+  outline: none;
+}
+
+.close-btn {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  padding: 10px;
+  opacity: 0.7;
+  outline: none;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group__input {
+  width: calc(100% - 30px);
+  border: 1px solid rgba(0, 0, 0, 0.16862745098039217);
+  padding: 12px 15px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 5px;
+  outline: none;
+  background: rgba(0, 0, 0, 0.03137254901960784);
+}
+
+.input-group-wrap {
+  position: relative;
+}
+
+.send-all-btn {
+  position: absolute;
+  right: -2px;
+  top: 0px;
+  bottom: 0px;
+  background: #007aff;
+  font-size: 15px;
+  border-radius: 0 5px 5px 0;
+  border: none;
+  color: #ffffff;
+  padding: 0 20px;
+  font-weight: 600;
+  outline: none;
+}
+
+.error-msg {
+  color: #FF3B30;
+  text-align: center;
+  margin-bottom: 10px;
 }
 </style>

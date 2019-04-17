@@ -1,5 +1,12 @@
 <template>
   <div v-if="token" id="tokendetail" style="padding: 15px;">
+    <div class="navbar">
+      <div class="navbar-container">
+        <button class="back-btn" @click="back">
+          <img src="./back.svg" width="20px">
+        </button>
+      </div>
+    </div>
     <div class="container" style="font-size: 25px">
       <div v-if="token" class="token-symbol">{{token.name}}</div>
     </div>
@@ -10,17 +17,14 @@
       </div>-->
       <div class="container">
         <div class="amount" style="font-size: 40px">{{parseFloat(tokenBalance).toFixed(2)}}</div>
-        <div
-          style="font-family: SFProText,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif; color: #cfcde1; text-align: center;"
-        >{{token.symbol}}</div>
+        <div style="color: #cfcde1; text-align: center;">{{token.symbol}}</div>
       </div>
     </div>
     <div class="exchange__button-container common__fade-in">
       <div class="exchange__button common__button-gradient" @click="showModal = true">Send</div>
     </div>
-    <h4 style="color: #fff; margin-bottom: 10px;">Transactions:</h4>
     <transaction style="padding-bottom: 30px"/>
-    <transferModal v-if="showModal" @close="showModal = false"></transferModal>
+    <transferModal :show="showModal" :balance="tokenBalance" @close="showModal = false"></transferModal>
   </div>
 </template>
 
@@ -33,16 +37,6 @@ import transaction from "./transaction";
 import { debuglog } from "util";
 export default {
   name: "TokenDetail",
-  beforeCreate() {
-    if (!store.data.address) {
-      window.addEventListener("load", () => {
-        const checkAddr = store.login();
-        if (checkAddr !== "undefined") {
-          store.loadTokens(1, 15);
-        }
-      });
-    }
-  },
   components: {
     transferModal,
     transaction
@@ -56,12 +50,31 @@ export default {
     };
   },
   async created() {
-    this.getTokens();
+    if (!store.data.address) {
+      window.addEventListener("load", () => {
+        store.login((err, address) => {
+          if (err) alert(err);
+          else {
+            store.loadTokens(1, 15);
+            this.getToken();
+          }
+        });
+      });
+    }
+    else {
+      this.getToken();
+    }
+  },
+  destroyed() {
+    clearInterval(this.loadTokenBalance);
   },
   methods: {
-    getTokens: async function() {
+    back() {
+      this.$router.back();
+    },
+    getToken: async function() {
       this.token = await store.getToken(this.$route.params.address);
-      let loadTokenBalance = setInterval(async () => {
+      this.loadTokenBalance = setInterval(async () => {
         this.token = await store.getToken(this.$route.params.address);
         contract.getTokenBalance(this.$route.params.address, balance => {
           this.tokenBalance = balance;
@@ -80,7 +93,6 @@ export default {
   text-align: center;
   padding: 15px 15px 0;
   color: #cfcde1;
-  font-family: SFProText, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
   padding-bottom: 10px;
 }
 
@@ -99,7 +111,7 @@ div.icon {
 .amount {
   text-align: center;
   font-weight: 600;
-  color: #30ddd8;
+  color: #4CD964;
 }
 
 .exchange {
@@ -224,6 +236,24 @@ div.icon {
   border-radius: 5px;
   margin-bottom: -10px;
   background: rgba(255, 255, 255, 0.05);
-  cursor: pointer;
+}
+
+.navbar {
+  height: 60px;
+}
+.navbar-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 50px;
+  padding-top: 10px;
+  background: #191d33;
+  z-index: 9999;
+}
+
+.back-btn {
+  padding: 10px;
+  outline: none;
 }
 </style>

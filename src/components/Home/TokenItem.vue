@@ -41,7 +41,7 @@ export default {
     font-weight: 900;
     height: 30px;
     line-height: 30px;
-    background: #678be0;
+    background: #FF9500;
     border-radius: 25px;
     color: #fff;
   }
@@ -65,7 +65,7 @@ export default {
 
     .amount {
       font-weight: 600;
-      color: #30ddd8;
+      color: #4CD964;
     }
   }
 }

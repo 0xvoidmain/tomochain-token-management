@@ -30,12 +30,15 @@ export default {
   },
   async created() {
     window.addEventListener("load", function() {
-      const checkAddr = store.login();
-      if (checkAddr !== "undefined") {
-        store.loadTokens(1, 15);
-      }
+      const checkAddr = store.login((err, address) => {
+        if (err) alert(err);
+        else {
+          store.loadTokens(1, 15);
+        }
+      });
     });
-    localStorage.page = 3;
+    localStorage.page = 1;
+    delete localStorage.transactions;
   }
 };
 </script>
