@@ -20,7 +20,8 @@ export default {
       name: (e.tokenObj.name || '').trim(),
       symbol: (e.tokenObj.symbol || '').trim(),
       balance: e.quantityNumber,
-      address: e.tokenObj.hash.toLowerCase()
+      address: e.tokenObj.hash.toLowerCase(),
+      decimals: parseInt(e.tokenObj.decimals) || 0
     }))
     .filter(e => !store.tokens.find(f => f.address == e.address));
     store.tokens = store.tokens.concat(newTokens);

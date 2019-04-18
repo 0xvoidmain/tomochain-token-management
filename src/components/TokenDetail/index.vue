@@ -21,8 +21,8 @@
     <div class="exchange__button-container common__fade-in">
       <div class="exchange__button common__button-gradient" @click="showModal = true">Send</div>
     </div>
-    <transaction style="padding-bottom: 100px"/>
-    <transferModal :show="showModal" :balance="tokenBalance" @close="showModal = false"></transferModal>
+    <transaction :token="token" style="padding-bottom: 100px"/>
+    <transferModal :show="showModal" :token="token" :balance="tokenBalance" @close="showModal = false"></transferModal>
   </div>
 </template>
 
@@ -53,7 +53,7 @@ export default {
         store.login((err, address) => {
           if (err) alert(err);
           else {
-            store.loadTokens(1, 15);
+            store.loadTokens(1, 50);
             this.getToken();
           }
         });
@@ -72,12 +72,15 @@ export default {
     },
     getToken: async function() {
       this.token = await store.getToken(this.$route.params.address);
+      contract.getTokenBalance(this.$route.params.address, balance => {
+        this.tokenBalance = balance;
+      });
       this.loadTokenBalance = setInterval(async () => {
         this.token = await store.getToken(this.$route.params.address);
         contract.getTokenBalance(this.$route.params.address, balance => {
           this.tokenBalance = balance;
         });
-      }, 1000);
+      }, 2000);
       let loadAccountBalance = contract.getAddressBalance(balance => {
         if (balance === 0) this.zeroTomo = true;
       });

@@ -20,7 +20,7 @@
           </div>
           <div
             style="color: #FF5723; width: 40%;font-size: 16px;text-align: right;"
-          >-{{(transaction.value/10**18).toFixed(2)}} {{transaction.symbol}}</div>
+          >-{{(transaction.value/10**(token.decimals)).toFixed(2)}} {{transaction.symbol}}</div>
         </div>
         <div v-if="transaction.to === address" class="transaction-table">
           <div class="container" style="margin-right: 0px; width: 60%">
@@ -31,7 +31,7 @@
           </div>
           <div
             style="color: #4CD964;width: 40%;font-size: 16px;text-align: right;"
-          >+{{(transaction.value/10**18).toFixed(2)}} {{transaction.symbol}}</div>
+          >+{{(transaction.value/10**(token.decimals)).toFixed(2)}} {{transaction.symbol}}</div>
         </div>
       </div>
       <h5 v-if="haveMore" @click="loadMore()" style="color: gray; text-align: center;">Load More</h5>
@@ -44,6 +44,7 @@ import store from "../../store";
 import axios from "axios";
 import { constants } from "fs";
 export default {
+  props: ['token'],
   data() {
     return {
       transactions: null,
