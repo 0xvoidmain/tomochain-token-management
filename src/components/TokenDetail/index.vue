@@ -1,12 +1,12 @@
 <template>
   <div v-if="token" id="tokendetail" style="padding: 0 15px 15px 15px;">
-    <div class="navbar">
+    <!-- <div class="navbar">
       <div class="navbar-container">
         <button class="back-btn" @click="back">
           <img src="./back.svg" width="20px">
         </button>
       </div>
-    </div>
+    </div> -->
     <div class="token-header">
       <div class="container" style="font-size: 25px">
         <div v-if="token" class="token-symbol">{{token.name}}</div>
