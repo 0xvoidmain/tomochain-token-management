@@ -7,24 +7,25 @@ var store = {
 
 export default {
   data: store,
-  async loadTokens(page, limit) {
-    var { data } = await axios.get(`${window.API}/token-holders`, {
+  async loadTokens(page, limit, cb) {
+    var { data } = await axios.get(`${window.TOKEN_HOLDER_API}/tokens`, {
       params: {
         page: page || 1,
         limit: limit || 15,
-        hash: store.address
+        holder: store.address
       }
     });
-    var newTokens = data.items.map(e => ({
+    var newTokens = data.map(e => ({
       icon: '',
-      name: (e.tokenObj.name || '').trim(),
-      symbol: (e.tokenObj.symbol || '').trim(),
-      balance: e.quantityNumber,
-      address: e.tokenObj.hash.toLowerCase(),
-      decimals: parseInt(e.tokenObj.decimals) || 0
+      name: (e.name || '').trim(),
+      symbol: (e.symbol || '').trim(),
+      balance: parseInt(e.balance) / (10 ** parseInt(e.decimals)),
+      address: e.address.toLowerCase(),
+      decimals: parseInt(e.decimals) || 0
     }))
     .filter(e => !store.tokens.find(f => f.address == e.address));
     store.tokens = store.tokens.concat(newTokens);
+    cb && cb();
   },
   login(cb) {
     if (typeof web3 !== "undefined") {
@@ -35,16 +36,18 @@ export default {
         else if (accounts.length === 0) {
           return cb && cb('Unlock Metamask, please')
         }
-        store.address = accounts[0];
+        store.address = (accounts[0] || '').toLowerCase();
 
         window.web3.version.getNetwork((err, netId) => {
           if (netId == "89") {
             window.API = 'https://scan.testnet.tomochain.com/api';
             window.TXS = 'https://scan.testnet.tomochain.com/txs';
+            window.TOKEN_HOLDER_API = 'https://apiwallet.testnet.tomochain.com/api';
           }
           else if (netId == "88") {
             window.API = 'https://scan.tomochain.com/api';
             window.TXS = 'https://scan.tomochain.com/txs';
+            window.TOKEN_HOLDER_API = 'https://wallet.tomochain.com/api';
           }
           else {
             cb && cb('Uknown network, change network to TomoChain, please');

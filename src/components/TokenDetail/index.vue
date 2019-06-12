@@ -46,8 +46,9 @@ export default {
         store.login((err, address) => {
           if (err) alert(err);
           else {
-            store.loadTokens(1, 50);
-            this.getToken();
+            store.loadTokens(1, 50, () => {
+              this.getToken();
+            });
           }
         });
       });
