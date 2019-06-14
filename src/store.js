@@ -7,7 +7,7 @@ var store = {
 
 export default {
   data: store,
-  async loadTokens(page, limit) {
+  async loadTokens(page, limit, cb) {
     var { data } = await axios.get(`${window.API}/token-holders`, {
       params: {
         page: page || 1,

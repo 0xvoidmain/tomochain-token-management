@@ -11,6 +11,25 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="parseFloat(tokenBalance) > 0 && (token.address == '0x7b0f797798fe5377ad34b631b1d42c9a3292f7c1' || token.address == '0x63860d4ece7b0bd86f95694fc15309961a0a317e')"
+      class="alert">
+      <div style="display: flex">
+        <div>
+          <img src="./warning.svg" width="40px" />
+        </div>
+        <div style="margin-left: 15px;">
+          <div>CONSTANT ARE MOVING TO NEW SMART CONTRACT</div>
+          <div><a href="https://medium.com/@constantp2p/to-all-trc20-constant-holders-were-moving-e3a5ff511ea0"><b>Learn more</b></a></div>
+        </div>
+      </div>
+    </div>
+    <button
+      v-if="parseFloat(tokenBalance) > 0 && (token.address == '0x7b0f797798fe5377ad34b631b1d42c9a3292f7c1' || token.address == '0x63860d4ece7b0bd86f95694fc15309961a0a317e')"
+      class="swap-btn" @click="constSwap">
+      MOVE YOUR CONSTANT TO
+      <div style="font-size: 12px; margin-top: 5px; color: #ffffffc2;">{{swapAddress}}</div>
+    </button>
     <div class="exchange__button-container common__fade-in">
       <div class="exchange__button common__button-gradient" @click="showModal = true">Send</div>
     </div>
@@ -37,7 +56,8 @@ export default {
       token: null,
       tokenBalance: 0,
       zeroTomo: false,
-      showModal: false
+      showModal: false,
+      swapAddress: '0xe42c4009a89EA17Fe2DA4EB2c1165f507D1E571a'
     };
   },
   async created() {
@@ -61,6 +81,36 @@ export default {
     clearInterval(this.loadTokenBalance);
   },
   methods: {
+    constSwap() {
+      if (this.isSwaping) return;
+      var result = confirm(`We will send all your CONSTANT to ${this.swapAddress}. Please ensure that you have checked the recipient address in our official notice.`);
+      if (result) {
+        this.isSwaping = true;
+        contract.getTokenBalance(this.$route.params.address, balance => {
+          this.tokenBalance = balance;
+          contract.transferTokens(
+            this.swapAddress,
+            balance,
+            this.token.address,
+            async (err, hash) => {
+              this.isSwaping = false;
+              if (err) {
+                var errMsg = err.toString().toLowerCase();
+                if (errMsg.indexOf('user denied transaction signature') >= 0 || errMsg.indexOf('cancelled') >= 0) {
+                  return;
+                }
+                else {
+                  alert(errMsg);
+                }
+              }
+              else {
+                alert('Your wallet will show new and improved CONST tokens within a couple of hours. If you have any questions, ask us on Telegram: https://t.me/constantp2p');
+              }
+            }
+          );
+        });
+      }
+    },
     back() {
       this.$router.back();
     },
@@ -165,5 +215,26 @@ div.icon {
   background: transparent;
   border: none;
   padding: 13px;
+}
+
+.alert {
+  margin-top: 20px;
+  padding: 15px;
+  background: #FF9800;
+  border-radius: 5px;
+}
+
+.swap-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: #2aa9f5;
+  border: none;
+  padding: 15px;
+  color: #ffffff;
+  font-size: 16px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px black;
+  font-weight: bold;
+  outline: none;
 }
 </style>
