@@ -15,11 +15,11 @@ export default {
         hash: store.address
       }
     });
-    var newTokens = data.map(e => ({
+    var newTokens = data.items.map(e => ({
       icon: '',
       name: (e.tokenObj.name || '').trim(),
       symbol: (e.tokenObj.symbol || '').trim(),
-      balance: e.quantityNumber,
+      balance: e.quantity,
       address: e.tokenObj.hash.toLowerCase(),
       decimals: parseInt(e.tokenObj.decimals) || 0
     }))

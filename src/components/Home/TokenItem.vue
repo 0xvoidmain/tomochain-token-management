@@ -8,7 +8,7 @@
           <div class="name">{{token.name}}</div>
           <div class="symbol">{{token.symbol}}</div>
         </div>
-        <div class="amount">{{parseFloat(token.balance).toFixed(2)}}</div>
+        <div class="amount">{{parseFloat(token.balance / (10 ** token.decimals)).toFixed(2)}}</div>
       </div>
     </div>
   </router-link>
