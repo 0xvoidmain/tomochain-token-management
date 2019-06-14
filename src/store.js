@@ -7,21 +7,21 @@ var store = {
 
 export default {
   data: store,
-  async loadTokens(page, limit, cb) {
-    var { data } = await axios.get(`${window.TOKEN_HOLDER_API}/tokens`, {
+  async loadTokens(page, limit) {
+    var { data } = await axios.get(`${window.API}/token-holders`, {
       params: {
         page: page || 1,
         limit: limit || 15,
-        holder: store.address
+        hash: store.address
       }
     });
     var newTokens = data.map(e => ({
       icon: '',
-      name: (e.name || '').trim(),
-      symbol: (e.symbol || '').trim(),
-      balance: parseInt(e.balance) / (10 ** parseInt(e.decimals)),
-      address: e.address.toLowerCase(),
-      decimals: parseInt(e.decimals) || 0
+      name: (e.tokenObj.name || '').trim(),
+      symbol: (e.tokenObj.symbol || '').trim(),
+      balance: e.quantityNumber,
+      address: e.tokenObj.hash.toLowerCase(),
+      decimals: parseInt(e.tokenObj.decimals) || 0
     }))
     .filter(e => !store.tokens.find(f => f.address == e.address));
     store.tokens = store.tokens.concat(newTokens);
