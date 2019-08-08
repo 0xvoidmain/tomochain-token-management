@@ -51,7 +51,8 @@ export default {
       recipientAddress: "",
       dontHaveTomoForFee: false,
       isSending: false,
-      errorMsg: ''
+      errorMsg: '',
+      balance: 0
     };
   },
   created() {
@@ -59,33 +60,42 @@ export default {
     contract.getAddressBalance(balance => {
       this.dontHaveTomoForFee = balance === 0;
     });
+    contract.getTokenBalance(this.$route.params.address, (balance) => {
+        this.balance = parseFloat(balance);
+    });
   },
   methods: {
+    setRecipientAddress(address) {
+      this.recipientAddress = address;
+    },
     closeModal() {
       this.transferValue = "";
       this.recipientAddress = "";
       this.$emit('close');
     },
     transfer: function() {
-      var errorMsg = this.validated();
-      if (errorMsg) {
-        this.errorMsg = errorMsg;
-        return;
-      }
-      this.isSending = true;
-      let result = contract.transferTokens(
-        this.recipientAddress,
-        this.transferValue,
-        this.token.address,
-        async (err, hash) => {
-          this.isSending = false;
-          this.closeModal();
+      contract.getTokenBalance(this.$route.params.address, (balance) => {
+        this.balance = parseFloat(balance);
+        var errorMsg = this.validated();
+        if (errorMsg) {
+          this.errorMsg = errorMsg;
+          return;
         }
-      );
+        this.isSending = true;
+        let result = contract.transferTokens(
+          this.recipientAddress,
+          this.transferValue,
+          this.token.address,
+          async (err, hash) => {
+            this.isSending = false;
+            this.closeModal();
+          }
+        );
+      })
     },
     validated: function() {
+      if (this.transferValue > this.token.balance) return "Not enough balancce";
       if (this.dontHaveTomoForFee) return "You don't have TOMO for transaction fee";
-      if (this.transferValue > this.token.balance) return "Not engouht balancce";
       if (this.transferValue == "" || this.transferValue == 0) return "Enter your amount";
       if (!this.isNumeric(this.transferValue)) return "Amount must be numeric";
       if (this.recipientAddress == "") return "Enter recipient address";
@@ -97,7 +107,10 @@ export default {
       return regex.test(value);
     },
     allToken: function() {
-      this.transferValue = this.token.balance;
+      contract.getTokenBalance(this.$route.params.address, (balance) => {
+        this.balance = parseFloat(balance);
+        this.transferValue = this.balance / (10 ** this.token.decimals);
+      });
     }
   }
 };

@@ -25,16 +25,19 @@
       </div>
     </div>
     <button
-      v-if="parseFloat(tokenBalance) > 0 && (token.address == '0x7b0f797798fe5377ad34b631b1d42c9a3292f7c1' || token.address == '0x63860d4ece7b0bd86f95694fc15309961a0a317e')"
+      v-if="!swapped && parseFloat(tokenBalance) > 0 && (token.address == '0x7b0f797798fe5377ad34b631b1d42c9a3292f7c1' || token.address == '0x63860d4ece7b0bd86f95694fc15309961a0a317e')"
       class="swap-btn" @click="constSwap">
-      MOVE YOUR CONSTANT TO
-      <div style="font-size: 12px; margin-top: 5px; color: #ffffffc2;">{{swapAddress}}</div>
+      MOVE YOUR CONSTANT TO SWAP
+      <div style="font-size: 12px; margin-top: 10px; color: #ffffffc2;">We will send all your CONST to {{swapAddress}}. Please ensure that you have checked the recipient address in our official notice.</div>
+    </button>
+    <button class="swap-btn" v-if="swapped && (token.address == '0x7b0f797798fe5377ad34b631b1d42c9a3292f7c1' || token.address == '0x63860d4ece7b0bd86f95694fc15309961a0a317e')">
+      <div style="font-size: 12px; color: #ffffffc2;">Your wallet will show new and improved CONST tokens within a couple of hours. If you have any questions, ask us on Telegram: <a href="https://t.me/constantp2p">https://t.me/constantp2p</a></div>
     </button>
     <div class="exchange__button-container common__fade-in">
-      <div class="exchange__button common__button-gradient" @click="showModal = true">Send</div>
+      <div class="exchange__button common__button-gradient" @click="showTransferModal">Send</div>
     </div>
     <transaction :token="token" style="padding-bottom: 100px"/>
-    <transferModal :show="showModal" :token="token" :balance="tokenBalance" @close="showModal = false"></transferModal>
+    <transferModal ref="transerModal" :show="showModal" :token="token" :balance="tokenBalance" @close="showModal = false"></transferModal>
   </div>
 </template>
 
@@ -44,7 +47,7 @@ import { constants } from "fs";
 import contract from "./contract";
 import transferModal from "./transferModal";
 import transaction from "./transaction";
-import { debuglog } from "util";
+
 export default {
   name: "TokenDetail",
   components: {
@@ -57,6 +60,7 @@ export default {
       tokenBalance: 0,
       zeroTomo: false,
       showModal: false,
+      swapped: !!localStorage.CONST_SWAPPED,
       swapAddress: '0xe42c4009a89EA17Fe2DA4EB2c1165f507D1E571a'
     };
   },
@@ -83,36 +87,39 @@ export default {
   methods: {
     constSwap() {
       if (this.isSwaping) return;
-      var result = confirm(`We will send all your CONSTANT to ${this.swapAddress}. Please ensure that you have checked the recipient address in our official notice.`);
-      if (result) {
-        this.isSwaping = true;
-        contract.getTokenBalance(this.$route.params.address, balance => {
-          this.tokenBalance = balance;
-          contract.transferTokens(
-            this.swapAddress,
-            balance,
-            this.token.address,
-            async (err, hash) => {
-              this.isSwaping = false;
-              if (err) {
-                var errMsg = err.toString().toLowerCase();
-                if (errMsg.indexOf('user denied transaction signature') >= 0 || errMsg.indexOf('cancelled') >= 0) {
-                  return;
-                }
-                else {
-                  alert(errMsg);
-                }
+      // alert(`We will send all your CONSTANT to ${this.swapAddress}. Please ensure that you have checked the recipient address in our official notice.`);
+      this.isSwaping = true;
+      contract.getTokenBalance(this.$route.params.address, balance => {
+        this.tokenBalance = balance;
+        contract.transferTokens(
+          this.swapAddress,
+          balance,
+          this.token.address,
+          async (err, hash) => {
+            this.isSwaping = false;
+            if (err) {
+              var errMsg = err.toString().toLowerCase();
+              if (errMsg.indexOf('user denied transaction signature') >= 0 || errMsg.indexOf('cancelled') >= 0) {
+                return;
               }
               else {
-                alert('Your wallet will show new and improved CONST tokens within a couple of hours. If you have any questions, ask us on Telegram: https://t.me/constantp2p');
+                alert(errMsg);
               }
             }
-          );
-        });
-      }
+            else {
+              localStorage.CONST_SWAPPED = true;
+              this.swapped = true;
+              alert('Your wallet will show new and improved CONST tokens within a couple of hours. If you have any questions, ask us on Telegram: https://t.me/constantp2p');
+            }
+          }
+        );
+      });
     },
     back() {
       this.$router.back();
+    },
+    showTransferModal() {
+      this.showModal = true;
     },
     getToken: async function() {
       this.token = await store.getToken(this.$route.params.address);
